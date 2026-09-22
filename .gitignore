@@ -1,5 +1,3 @@
-# Build output (regenerate with `make build`)
 build/
-
-# Downloaded test dependency (regenerate with `make deps`)
 libs/
+*.class
