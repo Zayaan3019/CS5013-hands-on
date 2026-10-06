@@ -1,21 +1,39 @@
-# M5 -- AI-assisted testing and documentation
+# CS5013 Module 5
 
-Starter for the tax-calculator + order-API exercises.
+## Description
 
-Run:
+The project contains a Java 17 tax calculator and an in-memory order service with controller code for listing, finding, creating, and cancelling orders.
 
-    make deps && make test
-    make coverage       # JaCoCo HTML at coverage/index.html
-    make mutation       # PIT HTML at build/reports/pitest/index.html
+## Build
 
-Session 5A: use an LLM to raise `TaxCalculator` line/branch coverage
-above the ~45%/~30% baseline the three seed tests give you.
-Session 5B: add JavaDoc, a README, and an OpenAPI spec for
-`OrderApi` (fake Spring annotations already in place so it compiles
-without Spring on the classpath).
+Use a Java 17 JDK and GNU Make. From this directory, run:
 
-The `mutation` target uses PIT 1.17.4 with the JUnit 5 plugin; both
-are auto-downloaded into `libs/` on first use.  Baseline mutation
-score with the seed test is around 36% (15 of 42 mutants killed) --
-Part D of the handout asks students to kill at least one surviving
-mutant.
+```sh
+make deps && make test
+make coverage
+make mutation
+```
+
+The coverage report is written to `coverage/index.html`; the mutation report is written to `build/reports/pitest/index.html`.
+
+## Quick example
+
+The order service can be used directly from Java:
+
+```java
+import java.math.BigDecimal;
+
+OrderService orders = new OrderService();
+Order created = orders.create("customer-7", new BigDecimal("49.95"));
+OrderDto result = OrderDto.from(created);
+```
+
+The controller source describes the REST routes. Local Spring annotation and response stubs let the exercise compile without the Spring dependency. There is no HTTP server bootstrap in this project.
+
+## Contributing
+
+TODO
+
+## License
+
+MIT (placeholder)

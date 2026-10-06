@@ -193,3 +193,78 @@ After adding it, PIT reported 11/11 mutants killed for `isEligibleForReturn` (10
 - Mutation score for the full class: 25/42 (59.5%) before and 26/42 (61.9%) after the targeted test.
 
 Mutation testing was more useful here than coverage alone: all branches were covered, but PIT still exposed an age-zero boundary case that needed its own test.
+
+# Session 5B: Auto-documentation
+
+The PDF asks for a Spring `OrderApi`. The M5 branch had `OrderService` and `OrderDto`, but no `OrderApi.java` or Spring annotation stubs. I added a small controller around the existing service operations, along with local stubs, so the source compiles without adding Spring as a dependency.
+
+## Part A - JavaDoc for one endpoint
+
+I used `POST /orders`, implemented by `OrderApi.createOrder`.
+
+Prompt used:
+
+```text
+Generate JavaDoc for the following method. Rules:
+- One-line summary in imperative mood.
+- Describe the contract, not the implementation.
+- @param for each parameter with type and constraints.
+- @return with what is returned.
+- @throws for each declared or unchecked exception the
+  caller should be aware of.
+- If any behaviour is not evident from the code, write
+  "TODO" and skip.
+```
+
+I added the JavaDoc to `src/OrderApi.java`, then checked it against the method body with this prompt:
+
+```text
+Given the JavaDoc above and the method body below,
+identify any statement in the JavaDoc that is inconsistent
+with the code. Do not fix; just list.
+```
+
+The first check found no inconsistencies. I then changed `createOrder` to trim whitespace from `customerId` before storing it, updated the `@param` description, and ran the check again. It found no inconsistencies in the final version. Invalid requests (a missing body, blank customer ID, or non-positive amount) receive HTTP 400 with an `ErrorResponse`; valid requests receive HTTP 201 with the created DTO.
+
+## Part B - README draft and review
+
+I supplied the M5 file tree and the top-level files (`Makefile`, `README.md`, `src/`, and `test/`) with this prompt:
+
+```text
+Draft a README.md for this repository with sections:
+description, build, quick example, contributing, license.
+Use MIT license placeholder.
+Rules:
+- Do NOT invent features not present in the code.
+- If a section has no evidence in the code, write "TODO" and
+  skip.
+- The one-line description must be a factual summary of what
+  the code does, not marketing copy.
+```
+
+I saved the first draft as `README.raw.md` and made the final edits in `README.md`. I checked the build commands against `Makefile`, the Java version against `javac --release 17`, the storage description against `OrderService`, and the route list against `OrderApi`. The quick example calls the existing `OrderService.create` and `OrderDto.from` methods. I found no contribution instructions in the repository, so that section says `TODO`. The draft did not contain any feature claims that needed to be removed.
+
+## Part C - OpenAPI spec
+
+Prompt used:
+
+```text
+Read the following Spring @RestController and generate an
+OpenAPI 3.0 YAML spec covering:
+- Every endpoint (path, method, summary from JavaDoc).
+- Request body schemas for POST/PUT.
+- Response schemas for 2xx and 4xx.
+- Referenced DTO schemas in the components section.
+If any endpoint's behaviour is unclear, add a TODO comment
+in the spec at that location.
+```
+
+I saved the spec as `openapi.yaml`. `OrderApi` has GET collection, GET by ID, POST create, and DELETE cancel operations; it has no PUT method, so there is no PUT body schema. The spec defines `OrderCreateRequest`, `OrderDto`, and `ErrorResponse` under `components.schemas`. Every operation lists a 2xx and a 4xx response. I left TODO notes for the 406/415 response bodies because `OrderApi` does not define them.
+
+I could not check the visual rendering in Swagger Editor because this session had no available browser. `swagger-cli validate openapi.yaml` accepted the file. I also checked the four paths and methods, the path parameter and POST body, the schema references, and the required 2xx and 4xx responses. The TODO comments mark framework-generated error bodies that `OrderApi` does not define.
+
+## Part D - Reflection
+
+- Both JavaDoc checks found no inconsistencies. I reran the check after changing how `customerId` is stored and updating the comment.
+- I did not find any invented feature claims in the README draft.
+- The OpenAPI work took the most editing because the branch did not include `OrderApi.java`. I based the controller on the service methods already in the project, then made the response codes and schemas match that controller. The framework-generated error responses still need confirmation in a Spring application.

@@ -1,0 +1,153 @@
+openapi: 3.0.3
+info:
+  title: CS5013 Module 5 Order API
+  version: 1.0.0
+  description: Endpoints exposed by the OrderApi controller.
+paths:
+  /orders:
+    get:
+      summary: List all orders.
+      description: The order of entries in the returned list is unspecified.
+      responses:
+        '200':
+          description: Orders currently known to the service.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDto'
+        '406':
+          description: The client does not accept an application/json response.
+          # TODO: The exact framework-generated body for this negotiation error is not set by OrderApi.
+    post:
+      summary: Create an order for a customer.
+      description: >-
+        Creates an order when the request has a nonblank customer ID and a
+        positive amount. Leading and trailing whitespace is removed from the
+        customer ID before it is stored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: The order was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDto'
+        '400':
+          description: The request body is missing or has a blank customer ID or a non-positive amount.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '406':
+          description: The client does not accept an application/json response.
+          # TODO: The exact framework-generated body for this negotiation error is not set by OrderApi.
+        '415':
+          description: The request content type is not application/json.
+          # TODO: The exact framework-generated body for this media-type error is not set by OrderApi.
+  /orders/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Order identifier.
+        schema:
+          type: string
+          minLength: 1
+          pattern: '\S'
+    get:
+      summary: Find an order by its identifier.
+      responses:
+        '200':
+          description: The matching order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDto'
+        '400':
+          description: The path identifier is blank.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No order has this identifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '406':
+          description: The client does not accept an application/json response.
+          # TODO: The exact framework-generated body for this negotiation error is not set by OrderApi.
+    delete:
+      summary: Cancel an order.
+      responses:
+        '204':
+          description: The order was cancelled. The response has no body.
+        '400':
+          description: The path identifier is blank.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No order has this identifier or it has already been cancelled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '406':
+          description: The client does not accept an application/json response.
+          # TODO: The exact framework-generated body for this negotiation error is not set by OrderApi.
+components:
+  schemas:
+    OrderCreateRequest:
+      type: object
+      required:
+        - customerId
+        - amount
+      properties:
+        customerId:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Nonblank customer ID; surrounding whitespace is trimmed before storage.
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          description: Order amount, which must be greater than zero.
+    OrderDto:
+      type: object
+      required:
+        - id
+        - customerId
+        - amount
+        - status
+      properties:
+        id:
+          type: string
+          description: Identifier assigned to the order.
+        customerId:
+          type: string
+        amount:
+          type: number
+          description: Order amount.
+        status:
+          type: string
+          enum:
+            - NEW
+            - CANCELLED
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
