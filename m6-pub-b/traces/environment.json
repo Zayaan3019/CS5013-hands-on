@@ -1,0 +1,34 @@
+{
+  "model": {
+    "name": "llama3.1:8b",
+    "model": "llama3.1:8b",
+    "modified_at": "2026-04-07T19:33:03.6147843+05:30",
+    "size": 4920753328,
+    "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size": "8.0B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 131072,
+      "embedding_length": 4096,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "tools"
+    ]
+  },
+  "ollama_version": "ollama version is 0.40.6",
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "compiled_release": 17,
+  "temperature": 0,
+  "seed": 42,
+  "num_ctx": 8192,
+  "num_predict": 256,
+  "usage_accounting": "Sum prompt_eval_count and eval_count for every response, including repeated history. No character estimate used in live experiments."
+}

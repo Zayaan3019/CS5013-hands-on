@@ -1,0 +1,31 @@
+{
+  "method": "Independent Python JSON check of the local catalogue, not a model response",
+  "total_records": 30,
+  "checks": {
+    "Le Guin|1970|1979": {
+      "count": 1,
+      "titles": [
+        "The Dispossessed"
+      ]
+    },
+    "Le Guin|1960|1969": {
+      "count": 2,
+      "titles": [
+        "The Left Hand of Darkness",
+        "A Wizard of Earthsea"
+      ]
+    },
+    "Butler|1970|1979": {
+      "count": 1,
+      "titles": [
+        "Kindred"
+      ]
+    },
+    "Butler|1990|1999": {
+      "count": 1,
+      "titles": [
+        "Parable of the Sower"
+      ]
+    }
+  }
+}
